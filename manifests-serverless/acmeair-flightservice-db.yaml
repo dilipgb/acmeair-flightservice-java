@@ -1,0 +1,55 @@
+##### Flight Database #####
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    service: acmeair-flight-db
+  name: acmeair-flight-db
+spec:
+  ports:
+  - name: "27017"
+    port: 27017
+    protocol: TCP
+    targetPort: 27017
+  selector:
+    name: acmeair-flight-db
+status:
+  loadBalancer: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  name: acmeair-flight-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: acmeair-flight-db
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: acmeair-flight-db
+    spec:
+      volumes:
+        - name: acmeair-flight-db-1
+          emptyDir: {}
+        - name: acmeair-flight-db-2
+          emptyDir: {}
+      containers:
+      - image: quay.io/dbhagava/s390x/mongo:4
+        name: acmeair-flight-db
+        ports:
+        - containerPort: 27017
+          protocol: TCP
+        resources: {}
+        volumeMounts:
+          - name: acmeair-flight-db-1
+            mountPath: /data/configdb
+          - name: acmeair-flight-db-2
+            mountPath: /data/db
+      restartPolicy: Always
+
